@@ -24,7 +24,7 @@ $(TARGET):$(OBJS)
 
 $(OUT_DIR)/%.o:$(SRC_DIR)/%.c
 	@$(MD) $(OUT_DIR)
-	@$(CC) $(INC_PATH) -c $< -o $@
+	@$(CC) $(INC_PATH) -c $< -fprofile-arcs -ftest-coverage -o $@
 
 .PHONY:clean
 clean:

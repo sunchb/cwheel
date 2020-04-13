@@ -1,5 +1,6 @@
 #include "stdlib.h"
 #include "clist.h"
+
 static cListNode* clist_reverse_sub(cListNode* node);
 
 int clist_init(cList* list){
@@ -74,17 +75,16 @@ int clist_remove_forward(cList* list, int index){
     tempNode.next = *list;
     
     cListNode* pre = &tempNode;
-    cListNode* node = tempNode.next;
 
-    while(node){
+    while(pre->next){
         if(index == 0){
-            pre->next = node->next;
-            free(node);
+            cListNode* p = pre->next;
+            pre->next = pre->next->next;
+            free(p);
             break;
         }
         index--;
-        pre = node;
-        node = node->next;
+        pre = pre->next;
     }
 
     *list = tempNode.next;
@@ -98,21 +98,18 @@ int clist_remove_reverse(cList* list, int index){
     tempNode.next = *list;
     
     cListNode* pre = &tempNode;
-    cListNode* node = tempNode.next;
-
-    while(node){
+    while(pre->next){
         if(index < 0){
             pre = pre->next;
         }else{
             index--;
         }
-        node = node->next;
     }
 
     if(index < 0){
-        node = pre->next;
-        pre->next = node->next;
-        free(node);
+        cListNode* p = pre->next;
+        pre->next = pre->next->next;
+        free(p);
     }
 
     *list = tempNode.next;
@@ -126,16 +123,15 @@ int clist_remove_cond(cList* list, clist_cond_func_t condFunc, void* args){
     tempNode.next = *list;
     
     cListNode* pre = &tempNode;
-    cListNode* node = tempNode.next;
 
-    while(node){
-        if(condFunc(node, args)){
-            pre->next = node->next;
-            free(node);
-            break;
+    while(pre->next){
+        if(condFunc(pre->next, args)){
+            cListNode* p = pre->next;
+            pre->next = pre->next->next;
+            free(p);
+        }else{
+            pre = pre->next;
         }
-        pre = node;
-        node = node->next;
     }
 
     *list = tempNode.next;
