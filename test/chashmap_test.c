@@ -4,7 +4,7 @@
 #include "assert.h"
 #include "cutil.h"
 
-const char* values[] = {
+const static char* values[] = {
     "this is string 0.",
     "this is string 1.",
     "this is string 2.",

@@ -51,15 +51,6 @@ int clist_reverse(cList* list){
     return RET_OK;
 }
 
-int clist_remove(cList* list, int index){
-    if(index >= 0){
-        return clist_remove_forward(list, index);
-    }else{
-        return clist_remove_reverse(list, -index);
-    }
-}
-
-
 cListNode* clist_reverse_sub(cListNode* node){
     if(node == NULL || node->next == NULL) return node;
 
@@ -99,12 +90,14 @@ int clist_remove_reverse(cList* list, int index){
     tempNode.next = *list;
     
     cListNode* pre = &tempNode;
-    while(pre->next){
+    cListNode* p2 = *list;
+    while(p2){
         if(index < 0){
             pre = pre->next;
         }else{
             index--;
         }
+        p2 = p2->next;
     }
 
     if(index < 0){
