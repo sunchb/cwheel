@@ -7,6 +7,11 @@ extern "C" {
 
 #include "cdef.h"
 
+
+#define CHASH_MAP_SIZE_MIN       (16)
+#define CHASH_MAP_SIZE_MAX       (0x40000000)
+//#define CHASH_MAP_SIZE_MAX       (32)
+
 typedef struct Entry {
     void*               key;
     void*               value;
@@ -114,27 +119,6 @@ void* chash_map_get(cHashMap* map, void* key);
  */
 int chash_map_remove(cHashMap* map, void* key);
 
-/**
- * @brief loop function.
- *
- * @param map: map to be operated.
- * @param func: function of iterative processing entries.
- * 
- * @return non-null on func return 1, null on func always return 0.
- *
- */
-Entry* chash_map_loop_all(cHashMap* map, loop_func_t func);
-
-/**
- * @brief loop function.
- *
- * @param map: map to be operated.
- * @param func: function of iterative processing entries.
- * 
- * @return non-null on func return 1, null on func always return 0.
- *
- */
-Entry* chash_map_loop(cHashMap* map, loop_func_t func);
 
 /**
  * @brief get begin iterator.

@@ -12,10 +12,6 @@ static int chash_map_resize(cHashMap* map);
 static int chash_map_hash_to_index(int hash, int size);
 static int chash_map_round_size(int size);
 
-#define CHASH_MAP_SIZE_MIN       (16)
-#define CHASH_MAP_SIZE_MAX       (0x40000000)
-//#define CHASH_MAP_SIZE_MAX       (32)
-
 int chash_map_init(cHashMap* map, int size, hash_func_t hashFunc, compare_key_t pCompareKeyFunc){
     if(map == NULL) return RET_ERR_NULL_POINTER;
 
@@ -38,7 +34,7 @@ int chash_map_init(cHashMap* map, int size, hash_func_t hashFunc, compare_key_t 
     return RET_OK;
 }
 
-int cash_map_deinit(cHashMap* map){
+int chash_map_deinit(cHashMap* map){
     if(map == NULL) return RET_ERR_NULL_POINTER;
 
     /* release res */
@@ -51,7 +47,7 @@ int cash_map_deinit(cHashMap* map){
     return RET_OK;
 }
 
-int cash_map_put(cHashMap* map, void* key, void* value){
+int chash_map_put(cHashMap* map, void* key, void* value){
     if(map == NULL) return RET_ERR_NULL_POINTER;
 
     int hash = map->pHashFunc(key);
@@ -87,7 +83,7 @@ int cash_map_put(cHashMap* map, void* key, void* value){
     return RET_OK;
 }
 
-void* cash_map_get(cHashMap* map, void* key){
+void* chash_map_get(cHashMap* map, void* key){
     if(map == NULL) return NULL;
 
     void* pRet = NULL;
@@ -118,52 +114,15 @@ int chash_map_remove(cHashMap* map, void* key){
     return RET_OK;
 }
 
-Entry* chash_map_loop_all(cHashMap* map, loop_func_t func){
-    Entry* pRet = NULL;
-    if(map == NULL) return pRet;
 
-    for(int i = 0; i < map->size; i++){
-        int entryIndex = 0;
-        Entry* list = map->table[i];
-        while(list != NULL){
-            if(func(list, i, entryIndex++)) {
-                pRet = list;
-                break;
-            }
-            list = list->next;
-        }
-        func(list, i, entryIndex++);
-    }
-    return pRet;
-}
-
-Entry* chash_map_loop(cHashMap* map, loop_func_t func){
-    Entry* pRet = NULL;
-    if(map == NULL) return pRet;
-
-    for(int i = 0; i < map->size; i++){
-        int entryIndex = 0;
-        Entry* list = map->table[i];
-        while(list != NULL){
-            if(func(list, i, entryIndex++)) {
-                pRet = list;
-                break;
-            }
-            list = list->next;
-        }
-    }
-
-    return pRet;
-}
-
-Entry* cash_map_iterator_begin(cHashMap* map){
+Entry* chash_map_iterator_begin(cHashMap* map){
     for(int i = 0; i < map->size; i++){
         if(map->table[i]) return map->table[i];
     }
     return NULL;
 }
 
-Entry* cash_map_iterator_next(cHashMap* map, Entry* cur){
+Entry* chash_map_iterator_next(cHashMap* map, Entry* cur){
 
     if(!map || !cur) return NULL;
 
@@ -178,7 +137,7 @@ Entry* cash_map_iterator_next(cHashMap* map, Entry* cur){
     return NULL;
 }
 
-Entry* cash_map_iterator_end(cHashMap* map){
+Entry* chash_map_iterator_end(cHashMap* map){
     return NULL;
 }
 
@@ -275,10 +234,11 @@ static int chash_map_resize(cHashMap* map){
                 newUsed++;
             }
 
+            Entry* tmp = list->next;
             list->next = pNewTable[index];
             pNewTable[index] = list;
 
-            list = list->next;
+            list = tmp;
         }
     }
 
