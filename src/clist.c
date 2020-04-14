@@ -1,5 +1,6 @@
 #include "stdlib.h"
 #include "clist.h"
+#include "cutil.h"
 
 static cListNode* clist_reverse_sub(cListNode* node);
 
@@ -24,7 +25,7 @@ int clist_deinit(cList* list){
 int clist_add_head(cList* list, void* value){
     if(!list) return RET_ERR_NULL_POINTER;
 
-    cListNode* pNode = (cListNode*)malloc(sizeof(cListNode));
+    cListNode* pNode = (cListNode*)cutil_malloc(sizeof(cListNode));
     if(!pNode) return RET_ERR_MEM;
 
     pNode->next = *list;
@@ -40,7 +41,7 @@ int clist_remove_head(cList* list){
 
     cListNode* pTemp = *list;
     *list = (*list)->next;
-    free(pTemp);
+    cutil_free(pTemp);
     return RET_OK;
 }
 
@@ -80,7 +81,7 @@ int clist_remove_forward(cList* list, int index){
         if(index == 0){
             cListNode* p = pre->next;
             pre->next = pre->next->next;
-            free(p);
+            cutil_free(p);
             break;
         }
         index--;
@@ -109,7 +110,7 @@ int clist_remove_reverse(cList* list, int index){
     if(index < 0){
         cListNode* p = pre->next;
         pre->next = pre->next->next;
-        free(p);
+        cutil_free(p);
     }
 
     *list = tempNode.next;
@@ -128,7 +129,7 @@ int clist_remove_cond(cList* list, clist_cond_func_t condFunc, void* args){
         if(condFunc(pre->next, args)){
             cListNode* p = pre->next;
             pre->next = pre->next->next;
-            free(p);
+            cutil_free(p);
         }else{
             pre = pre->next;
         }

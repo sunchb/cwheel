@@ -1,18 +1,19 @@
 #include "clist.h"
 #include "stdio.h"
+#include "cutil.h"
 
 
 void printList(cList* list){
     cListNode* p = *list;
     while(p){
-        printf("%d,", (int)(p->value));
+        cutil_logd("%d,", (int)(p->value));
         p = p->next;
     }
-    printf("\n");
+    cutil_logd("\n");
 }
 
 int clist_cond_test(cListNode* node, void* args){
-    //printf("%s,%d\n", __FUNCTION__, (int)(node->value));
+    //cutil_logd("%s,%d\n", __FUNCTION__, (int)(node->value));
     if(((int)(node->value)) == (int)args){
         return 1;
     }else{

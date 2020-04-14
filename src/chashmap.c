@@ -2,6 +2,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include "stdio.h"
+#include "cutil.h"
 
 static void chash_map_release_memory(cHashMap* map);
 static void chash_map_release_memory_entry_list(Entry* list);
@@ -16,9 +17,9 @@ int chash_map_init(cHashMap* map, int size, hash_func_t hashFunc, compare_key_t 
     if(map == NULL) return RET_ERR_NULL_POINTER;
 
     size = chash_map_round_size(size);
-    printf("size=%d\n", size);
+    cutil_logd("size=%d\n", size);
 
-    map->table = (Entry**)malloc(sizeof(Entry*) * size);
+    map->table = (Entry**)cutil_malloc(sizeof(Entry*) * size);
 
     if(map->table == NULL) return RET_ERR_MEM;
 
@@ -39,7 +40,7 @@ int chash_map_deinit(cHashMap* map){
 
     /* release res */
     chash_map_release_memory(map);
-    free(map->table);
+    cutil_free(map->table);
     map->table = NULL;
     map->pHashFunc = NULL;
     map->size = 0;
@@ -142,10 +143,10 @@ Entry* chash_map_iterator_end(cHashMap* map){
 }
 
 static Entry* chash_map_alloc_entry(void* key, void* value, int hash, Entry* next){
-    Entry* pRet = (Entry*)malloc(sizeof(Entry));
+    Entry* pRet = (Entry*)cutil_malloc(sizeof(Entry));
 
     if(pRet == NULL){
-        printf("Memory error on %s line %d.", __FUNCTION__, __LINE__);
+        cutil_logd("Memory error on %s line %d.", __FUNCTION__, __LINE__);
     }
 
     pRet->key = key;
@@ -170,7 +171,7 @@ static Entry* chash_map_find_in_entry(cHashMap* map, Entry* list, void* key){
 static void chash_map_release_memory_entry_list(Entry* list){
     while(list != NULL){
         Entry* next = list->next;
-        free(list);
+        cutil_free(list);
         list = next;
     }
 }
@@ -195,7 +196,7 @@ static Entry* chash_map_remove_entry_by_key(cHashMap* map, Entry* list, void* ke
             }else{
                 pre->next = list->next;
             }
-            free(list);
+            cutil_free(list);
             break;
         }
         pre = list;
@@ -206,19 +207,19 @@ static Entry* chash_map_remove_entry_by_key(cHashMap* map, Entry* list, void* ke
 }
 
 static int chash_map_resize(cHashMap* map){
-    printf("resize cur:(%d/%d)\n", map->used, map->size);
+    cutil_logd("resize cur:(%d/%d)\n", map->used, map->size);
 
     if(map->size > (CHASH_MAP_SIZE_MAX >> 1)){
-        printf("Unable resize because map size(%d) already maximum.\n", map->size);
+        cutil_logd("Unable resize because map size(%d) already maximum.\n", map->size);
         return RET_OK;
     }
 
     int newSize = map->size * 2;
     int newUsed = 0;
-    Entry** pNewTable = (Entry**)malloc(sizeof(Entry*) * newSize);
+    Entry** pNewTable = (Entry**)cutil_malloc(sizeof(Entry*) * newSize);
 
     if(pNewTable == NULL){
-        printf("Memory error on %s line %d.", __FUNCTION__, __LINE__);
+        cutil_logd("Memory error on %s line %d.", __FUNCTION__, __LINE__);
         return RET_ERR_MEM;
     }
 
@@ -242,7 +243,7 @@ static int chash_map_resize(cHashMap* map){
         }
     }
 
-    free(map->table);
+    cutil_free(map->table);
     map->table = pNewTable;
     map->size = newSize;
     map->used = newUsed;

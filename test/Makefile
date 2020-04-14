@@ -3,8 +3,8 @@ INC += -I../inc
 LIB_PATH += -L../output
 CC=gcc
 
-test:main.c chashmap_test.c clist_test.c ../src/clist.c ../src/chashmap.c
-	@$(CC) $(INC) $(LIB_PATH) -g -o test main.c chashmap_test.c clist_test.c ../src/clist.c ../src/chashmap.c -Wno-int-conversion -fprofile-arcs -ftest-coverage
+test:main.c chashmap_test.c clist_test.c ../src/clist.c ../src/chashmap.c ../src/cutil.c
+	@$(CC) $(INC) $(LIB_PATH) -g -o test main.c chashmap_test.c clist_test.c ../src/clist.c ../src/chashmap.c ../src/cutil.c -Wno-int-conversion -fprofile-arcs -ftest-coverage
 
 .PHONY:report run clean
 

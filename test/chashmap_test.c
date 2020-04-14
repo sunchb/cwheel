@@ -2,6 +2,7 @@
 #include "stdlib.h"
 #include "chashmap.h"
 #include "assert.h"
+#include "cutil.h"
 
 const char* values[] = {
     "this is string 0.",
@@ -81,18 +82,18 @@ int hash_func_int2(void* key){
 }
 
 int loop_func_print(Entry* entry, int row, int column){
-    if(column == 0) printf("row[%d]:", row);
+    if(column == 0) cutil_logd("row[%d]:", row);
 
     if(entry == NULL){
-        printf("null.\n");
+        cutil_logd("null.\n");
     }else{
-        printf("%d->", (int)(entry->key));
+        cutil_logd("%d->", (int)(entry->key));
     }
     return 0;
 }
 
 int loop_func_print2(Entry* entry, int row, int column){
-    if(entry) printf("%d:%s\n", (int)(entry->key), (char*)(entry->value));
+    if(entry) cutil_logd("%d:%s\n", (int)(entry->key), (char*)(entry->value));
     return 0;
 }
 
@@ -305,7 +306,7 @@ test_func_t testSet[] = {
 
 int chashmap_test(){
     for(int i = 0; i < sizeof(testSet)/sizeof(test_func_t); i++){
-        printf("run test %d...\n", i);
+        cutil_logd("run test %d...\n", i);
         testSet[i]();
     }
     return 0;
