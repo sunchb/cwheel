@@ -31,7 +31,7 @@ $(OUT_DIR)/%.o:$(SRC_DIR)/%.c
 ## rule for test source file
 $(OUT_DIR)/%.o:$(TEST_SRC_DIR)/%.c
 	@$(MD) $(OUT_DIR)
-	$(CC) $(INC) -Wno-int-conversion -fprofile-arcs -ftest-coverage -c -g $< -o $@
+	$(CC) $(INC) -Wno-int-conversion -c -g $< -o $@
 
 .PHONY:report run clean memchk
 
