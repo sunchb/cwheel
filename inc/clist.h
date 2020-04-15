@@ -18,26 +18,37 @@ typedef struct cList{
 }cList;
 
 typedef int (*clist_cond_func_t)(cListNode* node, void* args);
+typedef int (*clist_compare_func_t)(void* a, void* b);
 
 int clist_init(cList* list);
 int clist_deinit(cList* list);
+
+int clist_size(cList* list);
+int clist_is_empty(cList* list);
+
+int clist_contains(cList* list, void* value, clist_compare_func_t func);
+void* clist_get(cList* list, int index);
+int clist_set(cList* list, int index, void* value);
+
 int clist_add_head(cList* list, void* value);
+int clist_add(cList* list, int index, void* value);
+
+int clist_remove(cList* list, int index);
 int clist_remove_head(cList* list);
-int clist_reverse(cList* list);
-int clist_remove_forward(cList* list, int index);
-int clist_remove_reverse(cList* list, int index);
+int clist_remove_object(cList* list, void* object);
 int clist_remove_cond(cList* list, clist_cond_func_t condFunc, void* args);
+
 cListNode* clist_find_cond(cList* list, clist_cond_func_t condFunc, void* args);
+int clist_index_of(cList* list, void* value, clist_compare_func_t func);
+int clist_last_index_of(cList* list, void* value, clist_compare_func_t func);
+
+int clist_sub_list(cList* srcList, cList* dstList, int fromIndex, int toIndex);
+int clist_reverse(cList* list);
+void** clist_to_array(cList* list, int* size);
 
 #if 0
-int size();
-boolean isEmpty();
-boolean contains(Object o);
 Iterator<E> iterator();
-Object[] toArray();
-<T> T[] toArray(T[] a);
 boolean add(E e);
-boolean remove(Object o);
 boolean containsAll(Collection<?> c);
 boolean addAll(Collection<? extends E> c);
 boolean addAll(int index, Collection<? extends E> c);
@@ -46,15 +57,8 @@ boolean retainAll(Collection<?> c);
 void replaceAll(UnaryOperator<E> operator);
 void sort(Comparator<? super E> c);
 void clear();
-E get(int index);
-E set(int index, E element);
-void add(int index, E element);
-E remove(int index);
-int indexOf(Object o);
-int lastIndexOf(Object o);
 ListIterator<E> listIterator();
 ListIterator<E> listIterator(int index);
-List<E> subList(int fromIndex, int toIndex);
 #endif
 
 #ifdef __cplusplus
