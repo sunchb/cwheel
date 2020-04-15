@@ -73,7 +73,7 @@ int clist_test1(){
     cList list;
 
     clist_init(&list);
-    assert(list == NULL);
+    assert(list.head == NULL);
 
     for(int i = 0; i < 50; i++){
         clist_add_head(&list, values[i]);
@@ -81,23 +81,23 @@ int clist_test1(){
 
     cList temp = list;
     for(int i = 0; i < 50; i++){
-        assert(temp->value == values[49 - i]);
-        temp = temp->next;
+        assert(temp.head->value == values[49 - i]);
+        temp.head = temp.head->next;
     }
 
     clist_reverse(&list);
 
     temp = list;
     for(int i = 0; i < 50; i++){
-        assert(temp->value == values[i]);
-        temp = temp->next;
+        assert(temp.head->value == values[i]);
+        temp.head = temp.head->next;
     }
 
     for(int i = 0; i < 50; i++){
         clist_remove_head(&list);
     }
 
-    assert(list == NULL);
+    assert(list.head == NULL);
 
     clist_deinit(&list);
 
@@ -108,7 +108,7 @@ int clist_test2(){
     cList list;
 
     clist_init(&list);
-    assert(list == NULL);
+    assert(list.head == NULL);
 
     for(int i = 0; i < 50; i++){
         clist_add_head(&list, values[i]);
@@ -116,51 +116,51 @@ int clist_test2(){
 
     cList temp = list;
     for(int i = 0; i < 50; i++){
-        assert(temp->value == values[49 - i]);
-        temp = temp->next;
+        assert(temp.head->value == values[49 - i]);
+        temp.head = temp.head->next;
     }
-    assert(temp == NULL);
+    assert(temp.head == NULL);
 
     clist_remove_forward(&list, 0);
     temp = list;
     for(int i = 1; i < 50; i++){
-        assert(temp->value == values[49 - i]);
-        temp = temp->next;
+        assert(temp.head->value == values[49 - i]);
+        temp.head = temp.head->next;
     }
-    assert(temp == NULL);
+    assert(temp.head == NULL);
     
     clist_remove_forward(&list, 0);
     temp = list;
     for(int i = 2; i < 50; i++){
-        assert(temp->value == values[49 - i]);
-        temp = temp->next;
+        assert(temp.head->value == values[49 - i]);
+        temp.head = temp.head->next;
     }
-    assert(temp == NULL);
+    assert(temp.head == NULL);
 
     
     clist_remove_reverse(&list, 0);
     temp = list;
     for(int i = 2; i < 49; i++){
-        assert(temp->value == values[49 - i]);
-        temp = temp->next;
+        assert(temp.head->value == values[49 - i]);
+        temp.head = temp.head->next;
     }
-    assert(temp == NULL);
+    assert(temp.head == NULL);
 
     // temp = list;
     // while(temp){
-    //     printf("%s\n", (char*)temp->value);
-    //     temp = temp->next;
+    //     printf("%s\n", (char*)temp.head->value);
+    //     temp.head = temp.head->next;
     // }
     
-    cList anwser = list->next;
+    cListNode* anwser = list.head->next;
     clist_remove_reverse(&list, 46);
     temp = list;
     for(int i = 3; i < 49; i++){
-        assert(temp->value == values[49 - i]);
-        temp = temp->next;
+        assert(temp.head->value == values[49 - i]);
+        temp.head = temp.head->next;
     }
-    assert(temp == NULL);
-    assert(list == anwser);
+    assert(temp.head == NULL);
+    assert(list.head == anwser);
 
     clist_deinit(&list);
 
@@ -171,7 +171,7 @@ int clist_test3(){
     cList list;
 
     clist_init(&list);
-    assert(list == NULL);
+    assert(list.head == NULL);
 
     for(int i = 0; i < 50; i++){
         clist_add_head(&list, values[i]);
@@ -184,10 +184,10 @@ int clist_test3(){
 
     cList temp = list;
     for(int i = 0; i < 46; i++){
-        assert(temp->value == values[49 - i]);
-        temp = temp->next;
+        assert(temp.head->value == values[49 - i]);
+        temp.head = temp.head->next;
     }
-    assert(temp == NULL);
+    assert(temp.head == NULL);
 
     clist_deinit(&list);
 
@@ -206,7 +206,7 @@ int clist_test4(){
     cList list;
 
     clist_init(&list);
-    assert(list == NULL);
+    assert(list.head == NULL);
 
     for(int i = 0; i < 50; i++){
         clist_add_head(&list, values[i]);
@@ -218,20 +218,20 @@ int clist_test4(){
 
     cList temp = list;
     for(int i = 0; i < 50; i++){
-        assert(temp->value == values[i]);
-        temp = temp->next;
+        assert(temp.head->value == values[i]);
+        temp.head = temp.head->next;
     }
-    assert(temp == NULL);
+    assert(temp.head == NULL);
 
 
     clist_remove_cond(&list, test_list_cond_func, "this is string 49.");
     
     temp = list;
     for(int i = 0; i < 49; i++){
-        assert(temp->value == values[i]);
-        temp = temp->next;
+        assert(temp.head->value == values[i]);
+        temp.head = temp.head->next;
     }
-    assert(temp == NULL);
+    assert(temp.head == NULL);
 
     
     clist_remove_cond(&list, test_list_cond_func, "this is string 0.");
@@ -241,10 +241,10 @@ int clist_test4(){
     
     temp = list;
     for(int i = 4; i < 49; i++){
-        assert(temp->value == values[i]);
-        temp = temp->next;
+        assert(temp.head->value == values[i]);
+        temp.head = temp.head->next;
     }
-    assert(temp == NULL);
+    assert(temp.head == NULL);
 
     clist_deinit(&list);
 
@@ -255,7 +255,7 @@ int clist_test5(){
     cList list;
 
     clist_init(&list);
-    assert(list == NULL);
+    assert(list.head == NULL);
 
     for(int i = 0; i < 50; i++){
         clist_add_head(&list, values[i]);

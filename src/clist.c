@@ -7,7 +7,8 @@ static cListNode* clist_reverse_sub(cListNode* node);
 int clist_init(cList* list){
     if(!list) return RET_ERR_NULL_POINTER;
 
-    *list = NULL;
+    list->head = NULL;
+    list->size = 0;
 
     return RET_OK;
 }
@@ -15,7 +16,7 @@ int clist_init(cList* list){
 int clist_deinit(cList* list){
     if(!list) return RET_ERR_NULL_POINTER;
 
-    while(*list != NULL){
+    while(list->head != NULL){
         clist_remove_head(list);
     }
 
@@ -28,26 +29,26 @@ int clist_add_head(cList* list, void* value){
     cListNode* pNode = (cListNode*)cutil_malloc(sizeof(cListNode));
     if(!pNode) return RET_ERR_MEM;
 
-    pNode->next = *list;
+    pNode->next = list->head;
     pNode->value = value;
-    *list = pNode;
+    list->head = pNode;
     return RET_OK;
 }
 
 int clist_remove_head(cList* list){
     if(!list) return RET_ERR_NULL_POINTER;
 
-    if(*list == NULL) return RET_OK;
+    if(list->head == NULL) return RET_OK;
 
-    cListNode* pTemp = *list;
-    *list = (*list)->next;
+    cListNode* pTemp = list->head;
+    list->head = (list->head)->next;
     cutil_free(pTemp);
     return RET_OK;
 }
 
 int clist_reverse(cList* list){
     if(!list) return RET_ERR_NULL_POINTER;
-    *list = clist_reverse_sub(*list);
+    list->head = clist_reverse_sub(list->head);
     return RET_OK;
 }
 
@@ -64,7 +65,7 @@ int clist_remove_forward(cList* list, int index){
     if(!list) return RET_ERR_NULL_POINTER;
 
     cListNode tempNode;
-    tempNode.next = *list;
+    tempNode.next = list->head;
     
     cListNode* pre = &tempNode;
 
@@ -79,7 +80,7 @@ int clist_remove_forward(cList* list, int index){
         pre = pre->next;
     }
 
-    *list = tempNode.next;
+    list->head = tempNode.next;
     return RET_OK;
 }
 
@@ -87,10 +88,10 @@ int clist_remove_reverse(cList* list, int index){
     if(!list) return RET_ERR_NULL_POINTER;
 
     cListNode tempNode;
-    tempNode.next = *list;
+    tempNode.next = list->head;
     
     cListNode* pre = &tempNode;
-    cListNode* p2 = *list;
+    cListNode* p2 = list->head;
     while(p2){
         if(index < 0){
             pre = pre->next;
@@ -106,7 +107,7 @@ int clist_remove_reverse(cList* list, int index){
         cutil_free(p);
     }
 
-    *list = tempNode.next;
+    list->head = tempNode.next;
     return RET_OK;
 }
 
@@ -114,7 +115,7 @@ int clist_remove_cond(cList* list, clist_cond_func_t condFunc, void* args){
     if(!list) return RET_ERR_NULL_POINTER;
 
     cListNode tempNode;
-    tempNode.next = *list;
+    tempNode.next = list->head;
     
     cListNode* pre = &tempNode;
 
@@ -128,14 +129,14 @@ int clist_remove_cond(cList* list, clist_cond_func_t condFunc, void* args){
         }
     }
 
-    *list = tempNode.next;
+    list->head = tempNode.next;
     return RET_OK;
 }
 
 cListNode* clist_find_cond(cList* list, clist_cond_func_t condFunc, void* args){
     if(!list) return NULL;
 
-    cListNode* node = *list;
+    cListNode* node = list->head;
     while(node){
         if(condFunc(node, args)){
             return node;
