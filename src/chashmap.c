@@ -7,7 +7,7 @@
 static void chash_map_release_memory(cHashMap* map);
 static void chash_map_release_memory_entry_list(Entry* list);
 static Entry* chash_map_find_in_entry(cHashMap* map, Entry* list, void* key);
-static Entry* chash_map_alloc_entry(void* key, void* value, int hash, Entry* next);
+static Entry* chash_map_alloc_entry(void* key, void* value, int hash);
 static Entry* chash_map_remove_entry_by_key(cHashMap* map, Entry* list, void* key);
 static int chash_map_resize(cHashMap* map);
 static int chash_map_hash_to_index(int hash, int size);
@@ -19,11 +19,11 @@ int chash_map_init(cHashMap* map, int size, hash_func_t hashFunc, compare_key_t 
     size = chash_map_round_size(size);
     cutil_logd("size=%d\n", size);
 
-    map->table = (Entry**)cutil_malloc(sizeof(Entry*) * size);
+    map->table = (cList*)cutil_malloc(sizeof(cList) * size);
 
     if(map->table == NULL) return RET_ERR_MEM;
 
-    memset(map->table, 0, sizeof(Entry*) * size);
+    memset(map->table, 0, sizeof(cList) * size);
     map->size = size;
     map->used = 0;
     map->pHashFunc = hashFunc;
@@ -54,12 +54,14 @@ int chash_map_put(cHashMap* map, void* key, void* value){
     int hash = map->pHashFunc(key);
     int index = chash_map_hash_to_index(hash, map->size);
 
-    if(map->table[index] == NULL){
-        map->table[index] = chash_map_alloc_entry(key, value, hash, NULL);
-        
+    if(clist_size(&map->table[index]) == 0){
+        Entry* pEntry = chash_map_alloc_entry(key, value, hash);
+
         if(map->table[index] == NULL){
             return RET_ERR_MEM;
         }
+
+        clist_add_head(&map->table[index], pEntry);
 
         map->used++;
 
@@ -142,7 +144,7 @@ Entry* chash_map_iterator_end(cHashMap* map){
     return NULL;
 }
 
-static Entry* chash_map_alloc_entry(void* key, void* value, int hash, Entry* next){
+static Entry* chash_map_alloc_entry(void* key, void* value, int hash){
     Entry* pRet = (Entry*)cutil_malloc(sizeof(Entry));
 
     if(pRet == NULL){
@@ -152,7 +154,6 @@ static Entry* chash_map_alloc_entry(void* key, void* value, int hash, Entry* nex
     pRet->key = key;
     pRet->value = value;
     pRet->hash = hash;
-    pRet->next = next;
 
     return pRet;
 }
@@ -168,11 +169,11 @@ static Entry* chash_map_find_in_entry(cHashMap* map, Entry* list, void* key){
     return list;
 }
 
-static void chash_map_release_memory_entry_list(Entry* list){
-    while(list != NULL){
-        Entry* next = list->next;
-        cutil_free(list);
-        list = next;
+static void chash_map_release_memory_entry_list(cList* list){
+    cListNode* p = list->head;
+    while(p != NULL){
+        cutil_free(p->value);
+        p = p->next;
     }
 }
 
@@ -181,7 +182,7 @@ static void chash_map_release_memory(cHashMap* map){
 
     for(int i = 0; i < map->size; i++){
         chash_map_release_memory_entry_list(map->table[i]);
-        map->table[i] = NULL;
+        clist_deinit(map->table + i);
     }
 }
 

@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include "cdef.h"
+#include "clist.h"
 
 
 #define CHASH_MAP_SIZE_MIN       (16)
@@ -15,7 +16,6 @@ extern "C" {
 typedef struct Entry {
     void*               key;
     void*               value;
-    struct Entry*       next;
     int                 hash;
 } Entry;
 
@@ -57,7 +57,7 @@ typedef struct cHashMap {
     int                 used;               /* used of Entry table */
     hash_func_t         pHashFunc;          /* function of calculate hash value */
     compare_key_t       pCompareKeyFunc;    /* function of key cooperation */
-    Entry**             table;              /* Entry table */
+    cList*              table;              /* Entry table */
     int                 loadFactorNume;     /* Denominator of factor */
     int                 loadFactorDeno;     /* numerator of factor */
 }cHashMap;
