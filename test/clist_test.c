@@ -206,11 +206,7 @@ int clist_test3(){
 }
 
 int test_list_cond_func(cListNode* node, void* args){
-    if(strcmp((char*)node->value, (char*)args) == 0){
-        return 1;
-    }else{
-        return 0;
-    }
+   return strcmp((char*)node->value, (char*)args);
 }
 
 int clist_test4(){
@@ -283,9 +279,9 @@ int clist_test5(){
 
     assert(clist_find_cond(&list, test_list_cond_func, "abc") == NULL);
 
-    cListNode* node = clist_find_cond(&list, test_list_cond_func, "this is string 3.");
+    void* ret = clist_find_cond(&list, test_list_cond_func, "this is string 3.");
 
-    assert(strcmp((char*)node->value, "this is string 3.") == 0);
+    assert(strcmp((char*)ret, "this is string 3.") == 0);
     assert(clist_size(&list) == 50);
 
     clist_deinit(&list);
@@ -370,11 +366,11 @@ int clist_test9(){
     }
 
     for(int i = 0; i < 40; i++){
-        assert(clist_contains(&list, values[i], NULL) == 1);
+        assert(clist_contains(&list, NULL, values[i]) == 1);
     }
 
     for(int i = 40; i < 50; i++){
-        assert(clist_contains(&list, values[i], NULL) == 0);
+        assert(clist_contains(&list, NULL, values[i]) == 0);
     }
 
     clist_deinit(&list);
@@ -434,11 +430,11 @@ int clist_test12(){
     clist_reverse(&list);
 
     for(int i = 0; i < 50; i++){
-        assert(clist_last_index_of(&list, values[i], NULL) == i);
+        assert(clist_last_index_of(&list, NULL, values[i]) == i);
     }
 
     for(int i = 0; i < 50; i++){
-        assert(clist_index_of(&list, values[i], NULL) == i);
+        assert(clist_index_of(&list, NULL, values[i]) == i);
     }
 
     clist_deinit(&list);
@@ -456,11 +452,11 @@ int clist_test13(){
 
     clist_reverse(&list);
     
-    assert(clist_last_index_of(&list, values[0], NULL) == 49);
-    assert(clist_last_index_of(&list, values[1], NULL) == -1);
-    assert(clist_last_index_of(&list, values[2], NULL) == -1);
-    assert(clist_index_of(&list, values[1], NULL) == -1);
-    assert(clist_index_of(&list, values[2], NULL) == -1);
+    assert(clist_last_index_of(&list, NULL, values[0]) == 49);
+    assert(clist_last_index_of(&list, NULL, values[1]) == -1);
+    assert(clist_last_index_of(&list, NULL, values[2]) == -1);
+    assert(clist_index_of(&list, NULL, values[1]) == -1);
+    assert(clist_index_of(&list, NULL, values[2]) == -1);
 
     clist_deinit(&list);
 
@@ -557,8 +553,8 @@ int clist_test17(){
         clist_add_head(&list, values[i]);
     }
 
-    assert(clist_index_of(NULL, values[0], NULL) == -1);
-    assert(clist_index_of(&list, "abc", NULL) == -1);
+    assert(clist_index_of(NULL, NULL, values[0]) == -1);
+    assert(clist_index_of(&list, NULL, "abc") == -1);
 
     clist_deinit(&list);
     return 0;
@@ -572,8 +568,8 @@ int clist_test18(){
         clist_add_head(&list, values[i]);
     }
 
-    assert(clist_index_of(NULL, values[0], NULL) == -1);
-    assert(clist_index_of(&list, "abc", NULL) == -1);
+    assert(clist_index_of(NULL, NULL, values[0]) == -1);
+    assert(clist_index_of(&list, NULL, "abc") == -1);
 
     clist_deinit(&list);
     return 0;

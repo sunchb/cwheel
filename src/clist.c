@@ -4,8 +4,7 @@
 #include "cutil.h"
 
 static cListNode* clist_reverse_sub(cListNode* node);
-static int clist_get_index(cList* list, void* value, clist_compare_func_t func, int flag);
-static int clist_default_compare_func(void* a, void* b);
+static int clist_get_index(cList* list, clist_cond_func_t func, void* arg, int lastFlag);
 static int clist_default_cond_func(cListNode* node, void* args);
 static cListNode* clist_get_node(cList* list, int index);
 
@@ -38,8 +37,8 @@ int clist_is_empty(cList* list){
     return (!list) || (list->size == 0);
 }
 
-int clist_contains(cList* list, void* value, clist_compare_func_t func){
-    return clist_get_index(list, value, func, 0) != -1;
+int clist_contains(cList* list, clist_cond_func_t func, void* args){
+    return clist_get_index(list, func, args, 0) != -1;
 }
 
 void* clist_get(cList* list, int index){
@@ -143,13 +142,13 @@ int clist_remove_cond(cList* list, clist_cond_func_t condFunc, void* args){
 
     if(list->head == NULL) return RET_OK;
 
-    if(condFunc(list->head, args)){
+    if(condFunc(list->head, args) == 0){
         clist_remove_head(list);
     }else{
         cListNode* node = list->head;
         
         while(node->next){
-            if(condFunc(node->next, args)){
+            if(condFunc(node->next, args) == 0){
                 cListNode* pDel = node->next;
                 node->next = node->next->next;
                 cutil_free(pDel);
@@ -161,26 +160,20 @@ int clist_remove_cond(cList* list, clist_cond_func_t condFunc, void* args){
     }
 }
 
-cListNode* clist_find_cond(cList* list, clist_cond_func_t condFunc, void* args){
+void* clist_find_cond(cList* list, clist_cond_func_t condFunc, void* args){
     if(!list) return NULL;
 
-    cListNode* node = list->head;
-    while(node){
-        if(condFunc(node, args)){
-            return node;
-        }
-        node = node->next;
-    }
+    cListNode* node = clist_iterator_get(list, condFunc, args);
 
-    return NULL;
+    return node == NULL ? NULL : node->value;
 }
 
-int clist_index_of(cList* list, void* value, clist_compare_func_t func){
-    return clist_get_index(list, value, func, 0);
+int clist_index_of(cList* list, clist_cond_func_t func, void* args){
+    return clist_get_index(list, func, args, 0);
 }
 
-int clist_last_index_of(cList* list, void* value, clist_compare_func_t func){
-    return clist_get_index(list, value, func, 1);
+int clist_last_index_of(cList* list, clist_cond_func_t func, void* args){
+    return clist_get_index(list, func, args, 1);
 }
 
 
@@ -233,6 +226,32 @@ void** clist_to_array(cList* list, int* size){
     return ret;
 }
 
+cListNode* clist_iterator_get(cList* list, clist_cond_func_t condFunc, void* args){
+    if(!list) return NULL;
+
+    cListNode* node = list->head;
+    while(node){
+        if(condFunc(node, args) == 0){
+            return node;
+        }
+        node = node->next;
+    }
+
+    return NULL;
+}
+
+cListNode* clist_iterator_begin(cList* list){
+    return list->head;
+}
+
+cListNode* clist_iterator_next(cListNode* cur){
+    return cur == NULL ? NULL : cur->next;
+}
+
+cListNode* clist_iterator_end(cList* list){
+    return NULL;
+}
+
 static cListNode* clist_reverse_sub(cListNode* node){
     if(node == NULL || node->next == NULL) return node;
 
@@ -243,24 +262,25 @@ static cListNode* clist_reverse_sub(cListNode* node){
 }
 
 static int clist_default_cond_func(cListNode* node, void* args){
-    return node->value == args ? 1 : 0;
+    return node->value - args;
 }
 
-static int clist_default_compare_func(void* a, void* b){
-    return a - b;
+static int clist_count_minus_cond_func(cListNode* node, void* args){
+    int* pCount = args;
+    return (*pCount)--;
 }
 
-static int clist_get_index(cList* list, void* arg, clist_compare_func_t func, int lastFlag){
+static int clist_get_index(cList* list, clist_cond_func_t func, void* arg, int lastFlag){
     if(!list) return -1;
 
-    if(func == NULL) func = clist_default_compare_func;
+    if(func == NULL) func = clist_default_cond_func;
 
     int ret = -1;
     int index = 0;
 
     cListNode* temp = list->head;
     while(temp != NULL){
-        if(func(arg, temp->value) == 0){
+        if(func(temp, arg) == 0){
             ret = index;
             
             if(lastFlag == 0) break;
@@ -278,14 +298,5 @@ static cListNode* clist_get_node(cList* list, int index){
 
     if(list->size <= index) return NULL;
 
-    cListNode* temp = list->head;
-    while(temp != NULL){
-        if(index == 0){
-            return temp;
-        }
-        index--;
-        temp = temp->next;
-    }
-    assert(0);
-    return NULL;
+    return clist_iterator_get(list, clist_count_minus_cond_func, &index);
 }

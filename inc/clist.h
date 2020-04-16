@@ -18,7 +18,6 @@ typedef struct cList{
 }cList;
 
 typedef int (*clist_cond_func_t)(cListNode* node, void* args);
-typedef int (*clist_compare_func_t)(void* a, void* b);
 
 int clist_init(cList* list);
 int clist_deinit(cList* list);
@@ -26,7 +25,7 @@ int clist_deinit(cList* list);
 int clist_size(cList* list);
 int clist_is_empty(cList* list);
 
-int clist_contains(cList* list, void* value, clist_compare_func_t func);
+int clist_contains(cList* list, clist_cond_func_t func, void* args);
 void* clist_get(cList* list, int index);
 int clist_set(cList* list, int index, void* value);
 
@@ -38,13 +37,18 @@ int clist_remove_head(cList* list);
 int clist_remove_object(cList* list, void* object);
 int clist_remove_cond(cList* list, clist_cond_func_t condFunc, void* args);
 
-cListNode* clist_find_cond(cList* list, clist_cond_func_t condFunc, void* args);
-int clist_index_of(cList* list, void* value, clist_compare_func_t func);
-int clist_last_index_of(cList* list, void* value, clist_compare_func_t func);
+void* clist_find_cond(cList* list, clist_cond_func_t condFunc, void* args);
+int clist_index_of(cList* list, clist_cond_func_t func, void* args);
+int clist_last_index_of(cList* list, clist_cond_func_t func, void* args);
 
 int clist_sub_list(cList* srcList, cList* dstList, int fromIndex, int toIndex);
 int clist_reverse(cList* list);
 void** clist_to_array(cList* list, int* size);
+
+cListNode* clist_iterator_get(cList* list, clist_cond_func_t condFunc, void* args);
+cListNode* clist_iterator_begin(cList* list);
+cListNode* clist_iterator_next(cListNode* cur);
+cListNode* clist_iterator_end(cList* list);
 
 #if 0
 Iterator<E> iterator();
