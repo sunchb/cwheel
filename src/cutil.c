@@ -4,7 +4,7 @@
 
 void cutil_log(const char* file, const char* func, int line, int level, const char *cmd, ...)  
 {  
-    printf("[%s][line:%d][lev:%d]", file, line, level);
+    printf("[lev:%d][%s][line:%d]", level, func, line);
     va_list args;
     va_start(args,cmd);
     vprintf(cmd,args);
